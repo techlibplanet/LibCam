@@ -14,6 +14,7 @@ import net.rmitsolutions.libcam.Constants.DEFAULT_DIRECTORY_NAME
 import net.rmitsolutions.libcam.Constants.DEFAULT_FILE_PREFIX
 import net.rmitsolutions.libcam.Constants.SELECT_PHOTO
 import net.rmitsolutions.libcam.Constants.TAKE_PHOTO
+import net.rmitsolutions.libcam.Constants.globalBitmapUri
 import net.rmitsolutions.libcam.Constants.logD
 import net.rmitsolutions.libcam.Constants.logE
 import net.rmitsolutions.libcam.Constants.mCurrentPhotoPath
@@ -115,12 +116,14 @@ class ActionCamera {
     private fun getUriFilePath(file: File): Uri? {
         return if (android.os.Build.VERSION.SDK_INT >= 24) {
             logD("SDK >= 24")
-            FileProvider.getUriForFile(activity, activity.packageName+ ".provider", file)
+            globalBitmapUri = FileProvider.getUriForFile(activity, activity.packageName+ ".provider", file)
+            globalBitmapUri
 
         }else {
             logD("SDK < 24")
             logD(file.absolutePath)
-            Uri.fromFile(file)
+            globalBitmapUri =Uri.fromFile(file)
+            globalBitmapUri
         }
     }
 
@@ -165,9 +168,9 @@ class ActionCamera {
 
     fun resultPhoto(data : Intent): Bitmap? {
         return if (data!= null){
-            val contentUri = data.data
+            globalBitmapUri = data.data
             try {
-                MediaStore.Images.Media.getBitmap(activity.contentResolver, contentUri)
+                MediaStore.Images.Media.getBitmap(activity.contentResolver, globalBitmapUri)
             }catch (e: Exception){
                 logE("Exception : $e")
                 null
@@ -179,9 +182,9 @@ class ActionCamera {
 
     fun resultPhoto(data: Intent, rotate: Int): Bitmap? {
         return if (data!= null){
-            val contentUri = data.data
+            globalBitmapUri = data.data
             try {
-                return pictureUtils.rotateImage(MediaStore.Images.Media.getBitmap(activity.contentResolver, contentUri), rotate.toFloat())
+                return pictureUtils.rotateImage(MediaStore.Images.Media.getBitmap(activity.contentResolver, globalBitmapUri), rotate.toFloat())
             }catch (e: Exception){
                 logE("Exception : $e")
                 null

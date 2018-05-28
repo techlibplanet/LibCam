@@ -12,6 +12,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import net.rmitsolutions.libcam.Constants.CROP_PHOTO
 import net.rmitsolutions.libcam.Constants.SELECT_PHOTO
 import net.rmitsolutions.libcam.Constants.TAKE_PHOTO
+import net.rmitsolutions.libcam.Constants.globalBitmapUri
 import net.rmitsolutions.libcam.Constants.logD
 import net.rmitsolutions.libcam.LibCam
 import net.rmitsolutions.libcam.LibPermissions
@@ -74,10 +75,8 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         when(requestCode){
             TAKE_PHOTO ->{
-                if (data !=null){
-                    bitmap = libCam.resultPhoto(requestCode, resultCode, data)!!
-                    Glide.with(this).load(bitmap).into(imageViewCamera)
-                }
+                bitmap = libCam.loadBitmapFromUri(globalBitmapUri!!)!!
+                Glide.with(this).load(bitmap).into(imageViewCamera)
             }
             SELECT_PHOTO ->{
                 if (data!=null){
@@ -91,7 +90,8 @@ class MainActivity : AppCompatActivity() {
             CROP_PHOTO ->{
                 if (data!=null){
                     val uri= libCam.cropImageActivityResult(requestCode, resultCode, data)
-                    imageViewCamera.setImageURI(uri)
+                    bitmap = libCam.loadBitmapFromUri(uri!!)!!
+                    Glide.with(this).load(bitmap).into(imageViewCamera)
                 }else {
                     logD("Data is null")
                 }
