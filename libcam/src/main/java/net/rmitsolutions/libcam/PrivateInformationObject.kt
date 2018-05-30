@@ -2,6 +2,7 @@ package net.rmitsolutions.libcam
 
 class PrivateInformationObject {
     //Properties of face recognition
+    var imageName : String = ""
     var latitude: Float = 0.toFloat()
     var latitudeReference: String = ""
     var longitude: Float = 0.toFloat()

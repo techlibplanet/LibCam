@@ -16,9 +16,8 @@ class SavePhotoCallback  {
     fun onSavePhoto(mCurrentPhotoPath: String) {
         if (listener!=null){
             val privateInformation = PrivateInformation()
-            logD("Global path uri $mCurrentPhotoPath")
             val data =privateInformation.getImageInformation(mCurrentPhotoPath)
-            listener!!.onPhotoSaved(data!!)
+            listener?.onPhotoSaved(data!!)
         }
     }
 

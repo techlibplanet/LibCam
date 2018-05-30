@@ -7,6 +7,8 @@ import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.activity_main.*
@@ -28,7 +30,7 @@ import org.jetbrains.anko.toast
 class MainActivity : AppCompatActivity(), SavePhotoListener {
 
     private lateinit var libPermissions: LibPermissions
-    private lateinit var libCam : LibCam
+    private lateinit var libCam: LibCam
     private lateinit var bitmap: Bitmap
 
 
@@ -47,12 +49,13 @@ class MainActivity : AppCompatActivity(), SavePhotoListener {
 
     }
 
-    fun openCamera(view: View){
+
+    fun openCamera(view: View) {
         showPictureDialog()
     }
 
-    fun cropImage(view: View){
-        if (bitmap!=null){
+    fun cropImage(view: View) {
+        if (bitmap != null) {
 //            val uri = libCam.getBitmapUri(this,bitmap)
 //            libCam.cropImage(uri!!)
 //            libCam.savePhotoInMemoryDevice(bitmap, "Prefix",true)
@@ -67,7 +70,7 @@ class MainActivity : AppCompatActivity(), SavePhotoListener {
 //            savePhotoCallback.onSavePhoto(this)
             libCam.savePhotoInMemoryDevice(bitmap, DEFAULT_FILE_PREFIX, true)
             savePhotoCallback.setSavePhotoListener(this)
-            savePhotoCallback.onSavePhoto(mCurrentPhotoPath)
+            savePhotoCallback.onSavePhoto(libCam.getCurrentPhotoPath()!!)
         }
     }
 
@@ -95,29 +98,26 @@ class MainActivity : AppCompatActivity(), SavePhotoListener {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        when(requestCode){
-            TAKE_PHOTO ->{
-                if (data!= null){
-                    bitmap = libCam.loadBitmapFromUri(globalBitmapUri!!)!!
-                    Glide.with(this).load(bitmap).into(imageViewCamera)
-                }
-
+        when (requestCode) {
+            TAKE_PHOTO -> {
+                bitmap = libCam.loadBitmapFromUri(globalBitmapUri!!)!!
+                Glide.with(this).load(bitmap).into(imageViewCamera)
             }
-            SELECT_PHOTO ->{
-                if (data!=null){
+            SELECT_PHOTO -> {
+                if (data != null) {
                     bitmap = libCam.resultPhoto(requestCode, resultCode, data)!!
                     Glide.with(this).load(bitmap).into(imageViewCamera)
-                }else{
+                } else {
                     logD("Data is null")
                 }
 
             }
-            CROP_PHOTO ->{
-                if (data!=null){
-                    val uri= libCam.cropImageActivityResult(requestCode, resultCode, data)
-                    bitmap = libCam.loadBitmapFromUri(uri!!)!!
+            CROP_PHOTO -> {
+                if (data != null) {
+                    globalBitmapUri= libCam.cropImageActivityResult(requestCode, resultCode, data)
+                    bitmap = libCam.loadBitmapFromUri(globalBitmapUri!!)!!
                     Glide.with(this).load(bitmap).into(imageViewCamera)
-                }else {
+                } else {
                     logD("Data is null")
                 }
             }
@@ -125,8 +125,8 @@ class MainActivity : AppCompatActivity(), SavePhotoListener {
     }
 
     override fun onPhotoSaved(privateInfo: PrivateInformationObject) {
-        if (privateInfo!=null){
-
+        if (privateInfo != null) {
+            privateInfo.imageName = mCurrentImageName
             logD("Image Name $mCurrentImageName")
             logD("Orientation ${privateInfo.orientation}")
             logD("Model Name ${Build.MODEL}")
@@ -140,7 +140,8 @@ class MainActivity : AppCompatActivity(), SavePhotoListener {
             logD("Date Stamp ${privateInfo.dateStamp}")
             logD("Date time take photo ${privateInfo.dateTimeTakePhoto}")
             toast("Save photo successfully")
-        }else {
+            finish()
+        } else {
             logD("Some error occurred")
         }
 

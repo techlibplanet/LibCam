@@ -1,11 +1,13 @@
 package net.rmitsolutions.libcam
 
 import android.app.Activity
+import android.content.ComponentName
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Environment
+import android.os.Parcelable
 import android.provider.MediaStore
 import android.support.v4.content.FileProvider
 import android.util.Log
@@ -20,6 +22,7 @@ import net.rmitsolutions.libcam.Constants.logE
 import net.rmitsolutions.libcam.Constants.mCurrentImageName
 import net.rmitsolutions.libcam.Constants.mCurrentPhotoPath
 import java.io.File
+import java.util.ArrayList
 
 internal class ActionCamera {
 
@@ -288,4 +291,59 @@ internal class ActionCamera {
         val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         activity.startActivityForResult(galleryIntent, SELECT_PHOTO)
     }
+
+    fun takePhotoNew(){
+        activity.startActivityForResult(pickImageChooserIntent, 200)
+    }
+
+    private val pickImageChooserIntent: Intent
+        get() {
+            val outputFileUri = captureImageOutputUri
+
+            val allIntents = ArrayList<Intent>()
+            val packageManager = activity.packageManager
+            val captureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            val listCam = packageManager.queryIntentActivities(captureIntent, 0)
+            for (res in listCam) {
+                val intent = Intent(captureIntent)
+                intent.component = ComponentName(res.activityInfo.packageName, res.activityInfo.name)
+                intent.`package` = res.activityInfo.packageName
+                if (outputFileUri != null) {
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri)
+                }
+                allIntents.add(intent)
+            }
+            val galleryIntent = Intent(Intent.ACTION_GET_CONTENT)
+            galleryIntent.type = "image/*"
+            val listGallery = packageManager.queryIntentActivities(galleryIntent, 0)
+            for (res in listGallery) {
+                val intent = Intent(galleryIntent)
+                intent.component = ComponentName(res.activityInfo.packageName, res.activityInfo.name)
+                intent.`package` = res.activityInfo.packageName
+                allIntents.add(intent)
+            }
+            var mainIntent = allIntents[allIntents.size - 1]
+            for (intent in allIntents) {
+                if (intent.component!!.className == "com.android.documentsui.DocumentsActivity") {
+                    mainIntent = intent
+                    break
+                }
+            }
+            allIntents.remove(mainIntent)
+            val chooserIntent = Intent.createChooser(mainIntent, "Select source")
+            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, allIntents.toTypedArray<Parcelable>())
+
+            return chooserIntent
+        }
+
+    val captureImageOutputUri: Uri?
+        get() {
+            var outputFileUri: Uri? = null
+            val getImage = activity.externalCacheDir
+            if (getImage != null) {
+                outputFileUri = Uri.fromFile(File(getImage.path, "pickImageResult.jpeg"))
+
+            }
+            return outputFileUri
+        }
 }

@@ -11,6 +11,9 @@ import net.rmitsolutions.libcam.Constants.DEFAULT_BITMAP_FORMAT
 import net.rmitsolutions.libcam.Constants.DEFAULT_DIRECTORY_NAME
 import net.rmitsolutions.libcam.Constants.EXTERNAL_STORAGE
 import net.rmitsolutions.libcam.Constants.SELECT_PHOTO
+import net.rmitsolutions.libcam.Constants.globalBitmapUri
+import net.rmitsolutions.libcam.Constants.mCurrentImageName
+import net.rmitsolutions.libcam.Constants.mCurrentPhotoPath
 
 class LibCam  {
 
@@ -176,5 +179,28 @@ class LibCam  {
 
     fun savePhotoToSqlLite(){
 
+    }
+
+    fun getBitmapName(): String? {
+        if (globalBitmapUri!=null){
+            return mCurrentImageName
+        }
+        return null
+    }
+
+    fun getBitmapUri(): Uri? {
+        return if (globalBitmapUri!=null) globalBitmapUri else null
+    }
+
+    fun getCurrentPhotoPath(): String? {
+        return if (mCurrentPhotoPath!=null) mCurrentPhotoPath else null
+    }
+
+    fun takePhotoNew(){
+        actionCamera.takePhotoNew()
+    }
+
+    fun captureImageUri(): Uri? {
+        return actionCamera.captureImageOutputUri
     }
 }
