@@ -17,10 +17,11 @@ import net.rmitsolutions.libcam.Constants.TAKE_PHOTO
 import net.rmitsolutions.libcam.Constants.globalBitmapUri
 import net.rmitsolutions.libcam.Constants.logD
 import net.rmitsolutions.libcam.Constants.logE
+import net.rmitsolutions.libcam.Constants.mCurrentImageName
 import net.rmitsolutions.libcam.Constants.mCurrentPhotoPath
 import java.io.File
 
-class ActionCamera {
+internal class ActionCamera {
 
     private lateinit var activity : Activity
     private lateinit var privateInformation: PrivateInformation
@@ -139,6 +140,7 @@ class ActionCamera {
                 directory      /* directory */
         )
         mCurrentPhotoPath = image.absolutePath
+        mCurrentImageName = image.name
         return image
     }
 

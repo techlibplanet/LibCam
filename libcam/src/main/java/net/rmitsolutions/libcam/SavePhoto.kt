@@ -9,14 +9,16 @@ import net.rmitsolutions.libcam.Constants.JPEG
 import net.rmitsolutions.libcam.Constants.PNG
 import net.rmitsolutions.libcam.Constants.SAVE_DIRECTORY_NAME
 import net.rmitsolutions.libcam.Constants.WEBP
+import net.rmitsolutions.libcam.Constants.globalBitmapUri
 import net.rmitsolutions.libcam.Constants.logE
+import net.rmitsolutions.libcam.Constants.mCurrentPhotoPath
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
-class SavePhoto {
+internal class SavePhoto {
 
     fun writePhotoFile(bitmap: Bitmap?, photoName: String, directoryName: String,
                        format: Bitmap.CompressFormat, autoIncrementNameByDate: Boolean, activity: Activity): String? {
@@ -63,6 +65,7 @@ class SavePhoto {
                 val f = File(wallpaperDirectory, photoName)
                 try {
                     f.createNewFile()
+                    mCurrentPhotoPath = f.absolutePath
                     val fo = FileOutputStream(f)
                     fo.write(bytes.toByteArray())
                     fo.close()
@@ -73,6 +76,7 @@ class SavePhoto {
                         //Update the System
                         val u = Uri.parse(f.absolutePath)
                         activity.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, u))
+
                     } catch (ex: Exception) {
                         logE("Exception : $ex")
                     }

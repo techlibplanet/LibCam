@@ -12,7 +12,7 @@ import net.rmitsolutions.libcam.Constants.DEFAULT_DIRECTORY_NAME
 import net.rmitsolutions.libcam.Constants.EXTERNAL_STORAGE
 import net.rmitsolutions.libcam.Constants.SELECT_PHOTO
 
-class LibCam {
+class LibCam  {
 
     private lateinit var libPermissions : LibPermissions
     private lateinit var activity : Activity
@@ -172,5 +172,9 @@ class LibCam {
     fun getBitmapUri(context: Context, bitmap: Bitmap): Uri? {
         val path = MediaStore.Images.Media.insertImage(context.contentResolver, bitmap, "Title", null)
         return Uri.parse(path)
+    }
+
+    fun savePhotoToSqlLite(){
+
     }
 }

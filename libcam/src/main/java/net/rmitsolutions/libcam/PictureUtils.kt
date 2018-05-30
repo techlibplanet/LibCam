@@ -7,7 +7,7 @@ import android.util.Base64
 import java.io.ByteArrayOutputStream
 import java.io.File
 
-class PictureUtils {
+internal class PictureUtils {
     //===============================================================================
     // Utils methods, resize and get Photo Uri and others
     //================================================================================

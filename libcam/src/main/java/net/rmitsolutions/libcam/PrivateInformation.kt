@@ -4,19 +4,17 @@ import android.media.ExifInterface
 import net.rmitsolutions.libcam.Constants.notNullNotFill
 import java.io.IOException
 
-class PrivateInformation {
+internal class PrivateInformation {
 
-    //properties
+
     val privateInformationObject: PrivateInformationObject
 
-    //constructor
+
     init {
         privateInformationObject = PrivateInformationObject()
     }
 
-    //================================================================================
-    // Exif interface methods
-    //================================================================================
+
     private fun getAllFeatures(realPath: String): ExifInterface? {
         if (realPath != "") {
             var exif: ExifInterface? = null
